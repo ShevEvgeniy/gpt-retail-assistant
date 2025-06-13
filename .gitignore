@@ -1,0 +1,20 @@
+# Python
+*.pyc
+__pycache__/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+
+# Environment
+.env
+*.sqlite3
+
+# Static/media files (если собираются отдельно)
+static/
+media/
+
+# Logs
+*.log

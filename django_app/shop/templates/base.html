@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СушиShop</title>
+    <link href="/static/css/roboto.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a class="header__logo" href="{% url 'index' %}">СушиShop</a>
+        <a class="cart-link" href="{% url 'cart' %}">
+            <img class="cart-link__icon" src="/static/icons/cart.svg" width="30" height="30" alt="Корзина">
+            {% include 'includes/add_to_cart_popup.html' %}
+        </a>
+    </nav>
+
+    {% block breadcrumbs %}{% endblock breadcrumbs %}
+
+    {% block content %}{% endblock content %}
+
+    {% include 'includes/dialog_widget.html' %}
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <div class="breadcrumbs-sort-wrapper">
+        <div class="breadcrumbs">
+            <a href="/">Главная</a>
+            <span>/</span>
+            <span>Меню</span>
+        </div>
+
+        <form method="get" class="sort-form">
+            <label for="sort">Сортировать по цене:</label>
+            <select name="sort" id="sort">
+                <option value="asc">По возрастанию</option>
+                <option value="desc">По убыванию</option>
+            </select>
+            <button type="submit">Применить</button>
+        </form>
+    </div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+    <div class="content__container">
+        <div class="catalog__container">
+            {% for product in products %}
+                <div class="catalog__item">
+                    <a class="catalog__item__header" href="{% url 'product_detail' pk=product.pk %}">
+                        <h2>{{ product.name }}</h2>
+                    </a>
+                    <a class="catalog__item__photo__container" href="{% url 'product_detail' pk=product.pk %}">
+                        {% if product.image %}
+                            <img class="catalog__item__photo" src="{{ product.image.url }}">
+                        {% endif %}
+                    </a>
+                    <div class="catalog__item__price">Цена: {{ product.price|floatformat:0 }} ₽</div>
+                    {% include 'includes/ajax_buy_button.html' %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}

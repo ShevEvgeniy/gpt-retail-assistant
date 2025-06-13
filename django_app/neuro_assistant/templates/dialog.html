@@ -1,0 +1,156 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Диалог с консультантом</title>
+    <link
+      rel="stylesheet"
+      href="{% static '/neuro_assistant/css/styles.css' %}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
+    <script>
+      if (typeof marked === 'undefined') {
+        alert("❌ Marked.js не загрузился! Проверь CDN-ссылку.");
+      }
+    </script>
+  </head>
+  <body>
+    {% include 'includes/add_to_cart_popup.html' %}
+    <div class="chat-container" x-data="chat">
+      <div class="chat-box">
+        <div class="chat-messages">
+          <template x-for="msg in messages" :key="msg.id">
+            <div
+              x-html="renderMarkdown(msg.text)"
+              :class="msg.role == 'assistant' ? 'chat-message assistant' : 'chat-message user'"
+            ></div>
+          </template>
+          <div
+            x-show="isConsultantTyping"
+            class="chat-message assistant"
+          >
+            Консультант пишет...
+          </div>
+        </div>
+
+        <div class="cart-message" id="added_to_cart_message">
+          Товар добавлен в корзину
+        </div>
+      </div>
+
+      <div class="input-container">
+        <input
+          type="text"
+          class="chat-input"
+          placeholder="Введите ваше сообщение..."
+          x-model="newMessageText"
+          @keydown.enter="sendMessage"
+        />
+        <div @click="sendMessage" class="send-button">
+          <img
+            src="{% static '/neuro_assistant/icons/send.svg' %}"
+            width="30"
+            height="30"
+            alt="send"
+          />
+        </div>
+        <button class="reset-button" @click="resetChat">Очистить диалог</button>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("alpine:init", () => {
+        Alpine.data("chat", () => ({
+          messages: [],
+          newMessageText: "",
+          isConsultantTyping: false,
+          url: "http://127.0.0.1:5000/api/get_answer",
+
+          init() {
+            const savedMessages = localStorage.getItem("chatMessages");
+            if (savedMessages) {
+              this.messages = JSON.parse(savedMessages);
+            }
+          },
+
+          renderMarkdown(text) {
+            let html = marked.parse(text);
+            let linkRegex = /<a href=\".*?(\/products\/(\d+)).*?>(.*?)<\/a>/g;
+            html = html.replace(linkRegex, (match, url, productID, name) => {
+              return `<a class='add-to-cart' onclick='addToCart(${productID}, \"${name}\")'>🛒</a> <a href='${url}' target='_blank'>${name}</a>`;
+            });
+            return html;
+          },
+
+          sendMessage() {
+            if (this.newMessageText.trim() === "") return;
+
+            if (this.newMessageText.trim() === "/reset") {
+              this.resetChat();
+              return;
+            }
+
+            const payload = {
+              text: this.newMessageText,
+              messages: this.messages.map(message => ({
+                content: message.text,
+                role: message.role
+              }))
+            };
+
+            console.log("Отправляемое сообщение:", JSON.stringify(payload, null, 2));
+
+            this.messages.push({
+              text: this.newMessageText,
+              role: "user",
+              id: Date.now(),
+            });
+
+            this.isConsultantTyping = true;
+
+            fetch(this.url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+              mode: "cors",
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                const reply = data.answer || "❌ Ошибка: ответ пуст.";
+                this.messages.push({
+                  text: reply,
+                  role: "assistant",
+                  id: Date.now(),
+                });
+                this.isConsultantTyping = false;
+                localStorage.setItem(
+                  "chatMessages",
+                  JSON.stringify(this.messages)
+                );
+              })
+              .catch((error) => {
+                this.messages.push({
+                  text: "❌ Ошибка при обращении к серверу.",
+                  role: "assistant",
+                  id: Date.now(),
+                });
+                this.isConsultantTyping = false;
+              });
+
+            this.newMessageText = "";
+          },
+
+          resetChat() {
+            this.newMessageText = "";
+            this.messages = [];
+            localStorage.removeItem("chatMessages");
+          },
+        }));
+      });
+    </script>
+  </body>
+</html>

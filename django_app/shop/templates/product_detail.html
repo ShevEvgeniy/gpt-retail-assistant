@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <div class="content__container">
+        <div class="breadcrumbs">
+            <a href="/">Главная</a>
+            <span>/</span>
+            <a href="{% url 'product_list' %}">Меню</a>
+            <span>/</span>
+            <span>{{ product.name }}</span>
+        </div>
+    </div>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<style>
+    .product-detail {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px;
+    }
+
+    .product-detail img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        flex: 1 1 300px; /* Image takes up to 300px width */
+    }
+
+    .product-detail .product-detail__info {
+        flex: 1 1 280px; /* Information takes up to 300px width */
+        padding-left: 20px;
+    }
+
+    .product-detail__name {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .product-detail__description {
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .product-detail__price {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #e45100;
+    }
+
+    @media only screen and (max-width: 768px) {
+
+        .product-detail img {
+            margin-right: 0;
+            margin-bottom: 20px;
+        }
+
+        .product-detail__info {
+            padding-left: 0;
+        }
+    }
+</style>
+<div class="product-detail">
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    {% endif %}
+    <div class="product-detail__info">
+        <h2 class="product-detail__name">{{ product.name }}</h2>
+        <div class="product-detail__description">{{ product.description|linebreaksbr }}</div>
+        <div class="product-detail__price">Цена: {{ product.price|floatformat:0 }} ₽</div>
+        
+        {% include 'includes/ajax_buy_button.html' %}
+        
+    </div>
+</div>
+{% endblock content %}
