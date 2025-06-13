@@ -1,0 +1,24 @@
+fastapi==0.110.0
+uvicorn==0.28.0
+python-dotenv==1.0.1
+
+# OpenAI API
+openai==1.14.0
+tiktoken==0.6.0
+
+# LangChain и компоненты
+langchain==0.1.12
+langchain-openai==0.0.8
+langchain-community==0.0.34
+langchain-core==0.1.39
+langchain-text-splitters==0.0.1.post1
+
+# FAISS в CPU-версии
+faiss-cpu==1.8.0
+
+# Асинхронные таймауты
+async-timeout==4.0.3
+
+# Для Markdown-загрузки
+markdown==3.6
+
