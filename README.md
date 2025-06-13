@@ -1,4 +1,4 @@
-# GPT Retail Assistant 🍣🤖
+# # СушиShop: Интеллектуальный чат-бот консультант на базе Django, FastAPI и GPT-4 🍣🤖
 
 Интеллектуальный чат-бот-консультант для онлайн-магазина суши на базе Django + FastAPI + GPT-4o.
 
@@ -94,7 +94,7 @@ uvicorn main:app --port 5000
 ---
 
 ## 📢 Автор
-[Evgeniy Shevchenko](https://github.com/ShevEvgeniy)
+[Evgeniy Shitov](https://github.com/ShevEvgeniy)
 
 ---
 
